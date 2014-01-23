@@ -8,6 +8,8 @@ SITE_ID = 1
 APP_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..'))
 
+DJANGO_PROJECT_ROOT = os.path.join(APP_ROOT, '..')
+
 
 DATABASES = {
     'default': {
@@ -33,7 +35,7 @@ COVERAGE_REPORT_HTML_OUTPUT_DIR = os.path.join(
     os.path.join(APP_ROOT, 'tests/coverage'))
 COVERAGE_MODULE_EXCLUDES = [
     'tests$', 'settings$', 'urls$', 'locale$',
-    'migrations', 'fixtures', 'admin$', 'django_extensions',
+    'migrations', 'fixtures', 'admin$', 'django_extensions', 'test_app$',
 ]
 
 EXTERNAL_APPS = [
