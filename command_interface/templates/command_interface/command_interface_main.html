@@ -1,12 +1,20 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block title %}Command interface{% endblock %}
 
 {% block main %}
+    <h1>Command interface</h1>
+    <p>{% trans "Clicking on &quot;Run command&quot; will execute the desired command in the background." %}</p>
     {% for app in apps %}
         <h2>{{ app.app_name }}</h2>
         {% for command in app.commands %}
             <h3>{{ command.command }}</h3>
             <p>{{ command.docstring }}</p>
+            <form action="." method="post">
+                {% csrf_token %}
+                <input type="hidden" id="id_command" name="command" value="{{ command.command }}" />
+                <input type="submit" value="{% trans "Run command" %}" />
+            </form>
         {% endfor %}
     {% endfor %}
 {% endblock %}

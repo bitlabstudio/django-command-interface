@@ -1,6 +1,8 @@
 """Tests for the forms of the ``command_interface`` app."""
+import os
 import subprocess
 
+from django.conf import settings
 from django.test import TestCase
 
 from mock import patch
@@ -13,7 +15,10 @@ class CommandExecutionFormTestCase(TestCase):
     longMessage = True
 
     def setUp(self):
-        self.data = {'command': 'mycommand'}
+        command = 'mycommand'
+        self.data = {'command': command}
+        manage_py = os.path.join(settings.DJANGO_PROJECT_ROOT, 'manage.py')
+        self.called_with = ['/.{0}'.format(manage_py), command]
 
     @patch.object(subprocess, 'Popen')
     def test_form(self, popen_mock):
@@ -22,4 +27,4 @@ class CommandExecutionFormTestCase(TestCase):
             'The form should be valid. Errors: {0}'.format(form.errors)))
 
         form.execute()
-        popen_mock.assert_called()
+        popen_mock.assert_called_with(self.called_with)

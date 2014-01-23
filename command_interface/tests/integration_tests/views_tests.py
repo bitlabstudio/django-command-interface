@@ -1,4 +1,7 @@
 """Tests for the views of the ``command_interface`` app."""
+import os
+import subprocess
+
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase
@@ -6,6 +9,7 @@ from django.test.client import RequestFactory
 
 from django_libs.tests.factories import UserFactory
 from django_libs.tests.mixins import ViewTestMixin
+from mock import patch
 
 from ...views import CommandInterfaceMainView
 
@@ -37,7 +41,14 @@ class CommandInterfaceViewTestCase(ViewTestMixin, TestCase):
         self.req = RequestFactory().get(self.get_url())
         self.view = CommandInterfaceMainView.as_view()
 
-    def test_view(self):
+        command = 'mycommand'
+        self.data = {'command': command}
+        self.post_req = RequestFactory().post(self.get_url(), data=self.data)
+        manage_py = os.path.join(settings.DJANGO_PROJECT_ROOT, 'manage.py')
+        self.called_with = ['/.{0}'.format(manage_py), command]
+
+    @patch.object(subprocess, 'Popen')
+    def test_view(self, popen_mock):
         # Anonymous users should be redirected to login
         self.req.user = AnonymousUser()
         resp = self.view(self.req)
@@ -53,3 +64,9 @@ class CommandInterfaceViewTestCase(ViewTestMixin, TestCase):
         resp = self.view(self.req)
         self.assertEqual(resp.status_code, 200, msg=(
             'Superusers should be able to call the view.'))
+
+        self.post_req.user = self.admin
+        resp = self.view(self.post_req)
+        self.assertRedirects(resp, self.get_url())
+        # test if the command was called.
+        popen_mock.assert_called_with(self.called_with)
