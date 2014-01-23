@@ -1,12 +1,11 @@
 """URLs for the command_interface app."""
-# from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
-# from . import views
+from . import views
 
 
-# urlpatterns = patterns(
-#     '',
-#     url(r'^$',
-#         views.YourView.as_view(),
-#         name='command_interface_default'),
-# )
+urlpatterns = patterns(
+    '',
+    url(r'^$', views.CommandInterfaceMainView.as_view(),
+        name='command_interface_main'),
+)

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Command interface{% endblock %}
+
+{% block main %}
+    {% for app in apps %}
+        <h2>{{ app.app_name }}</h2>
+        {% for command in app.commands %}
+            <h3>{{ command.command }}</h3>
+            <p>{{ command.docstring }}</p>
+        {% endfor %}
+    {% endfor %}
+{% endblock %}

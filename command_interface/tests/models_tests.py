@@ -1,10 +1,2 @@
 """Tests for the models of the command_interface app."""
-from django.test import TestCase
-
-# from .factories import YourModelFactory
-
-
-class DummyTestCase(TestCase):
-    """Sample test case to show that `python setup.py test` works."""
-    def test_something(self):
-        self.assertTrue(True)
+# These aren't the tests you're looking for.
