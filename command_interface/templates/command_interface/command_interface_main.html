@@ -5,7 +5,14 @@
 {% block main %}
     <h1>Command interface</h1>
     <p>{% trans "Clicking on &quot;Run command&quot; will execute the desired command in the background." %}</p>
-    {% for app in apps %}
+    {% if form.errors %}
+        {% for error in form.non_field_errors %}
+            <ul>
+                <li>{{ error }}</li>
+            </ul>
+        {% endfor %}
+    {% endif %}
+    {% for app in form.apps %}
         <h2>{{ app.app_name }}</h2>
         {% for command in app.commands %}
             <h3>{{ command.command }}</h3>

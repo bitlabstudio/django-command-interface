@@ -22,6 +22,9 @@ class CommandExecutionFormTestCase(TestCase):
 
     @patch.object(subprocess, 'Popen')
     def test_form(self, popen_mock):
+        form = CommandExecutionForm(data={'command': 'runserver'})
+        self.assertFalse(form.is_valid(), msg='The form should not be valid.')
+
         form = CommandExecutionForm(self.data)
         self.assertTrue(form.is_valid(), msg=(
             'The form should be valid. Errors: {0}'.format(form.errors)))
