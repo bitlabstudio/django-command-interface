@@ -1,7 +1,8 @@
 Django command interface
-============
+========================
 
-A reusable Django app that allows to list manage.py commands and lauch them with one click
+A reusable Django app that allows to list manage.py commands and lauch them 
+with one click.
 
 Installation
 ------------
@@ -37,19 +38,6 @@ Add the ``command_interface`` URLs to your ``urls.py``
         ...
         url(r'^command-interface/', include('command_interface.urls')),
     )
-
-Before your tags/filters are available in your templates, load them by using
-
-.. code-block:: html
-
-	{% load command_interface_tags %}
-
-
-Don't forget to migrate your database
-
-.. code-block:: bash
-
-    ./manage.py migrate command_interface
 
 
 Usage
