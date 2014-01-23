@@ -43,8 +43,40 @@ Add the ``command_interface`` URLs to your ``urls.py``
 Usage
 -----
 
-TODO: Describe usage or point to docs. Also describe available settings and
-templatetags.
+Just visit the command interface main panel at view name
+``command_interface_main`` and see listed all the commands, that you can
+execute just by clicking "Run command".
+
+That's it.
+
+
+Passing arguments to the commands is still WIP.
+
+
+Settings
+--------
+
+You can limit the displayed apps by setting
+``COMMAND_INTERFACE_DISPLAYED_APPS``. The syntax is the same as it is in the
+``INSTALLED_APPS`` setting. It defaults to showing absolutely all apps.
+
+.. code-block:: python
+
+    # would list all commands of the awesome_app
+    COMMAND_INTERFACE_DISPLAYED_APPS = ['awesome_app']
+
+
+Further you can also provide a list of commands, that should explicitly be
+displayed. Defaults to all as well.
+
+.. code-block:: python
+
+    # would on its own only show the mycommand command
+    COMMAND_INTERFACE_DISPLAYED_COMMANDS = ['mycommand']
+
+
+The settings don't exclude each other. So displaying any full app and just one
+or two specific commands from somewhere else is no problem at all.
 
 
 Contribute

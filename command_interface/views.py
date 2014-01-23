@@ -9,6 +9,7 @@ from django.views.generic import FormView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 
+from . import settings
 from .forms import CommandExecutionForm
 
 
@@ -20,6 +21,15 @@ class CommandInterfaceMainView(FormView):
     """
     form_class = CommandExecutionForm
     template_name = 'command_interface/command_interface_main.html'
+
+    def command_allowed(self, command_name, app_name):
+        """Returns whether or not the command or app should be listed."""
+        if not settings.DISPLAYED_APPS and not settings.DISPLAYED_COMMANDS:
+            return True
+        if command_name in settings.DISPLAYED_COMMANDS or \
+                app_name in settings.DISPLAYED_APPS:
+            return True
+        return False
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -37,20 +47,21 @@ class CommandInterfaceMainView(FormView):
         command_dict = get_commands()
         apps = {}
         for command_name, app_name in command_dict.iteritems():
-            command_class = load_command_class(app_name, command_name)
-            Command = namedtuple('Command', ['command', 'docstring'])
-            if command_class.__doc__ is not None:
-                docstring = command_class.__doc__
-            else:
-                docstring = getattr(command_class, 'help',
-                                    _('No docs available.'))
-            command = Command(command_name, docstring)
-            if not app_name in apps:
-                App = namedtuple(app_name.replace('.', '_'),
-                                 ['app_name', 'commands'])
-                apps[app_name] = App(app_name, [command])
-            else:
-                apps[app_name].commands.append(command)
+            if self.command_allowed(command_name, app_name):
+                command_class = load_command_class(app_name, command_name)
+                Command = namedtuple('Command', ['command', 'docstring'])
+                if command_class.__doc__ is not None:
+                    docstring = command_class.__doc__
+                else:
+                    docstring = getattr(command_class, 'help',
+                                        _('No docs available.'))
+                command = Command(command_name, docstring)
+                if not app_name in apps:
+                    App = namedtuple(app_name.replace('.', '_'),
+                                     ['app_name', 'commands'])
+                    apps[app_name] = App(app_name, [command])
+                else:
+                    apps[app_name].commands.append(command)
 
         ctx.update({'apps': apps.values()})
         return ctx
