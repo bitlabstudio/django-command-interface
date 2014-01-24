@@ -50,6 +50,7 @@ EXTERNAL_APPS = [
     'django.contrib.sites',
     'django_jasmine',
     'django_nose',
+    'django_libs',
     'south',
 ]
 

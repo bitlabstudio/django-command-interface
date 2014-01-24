@@ -15,6 +15,10 @@ class CommandExecutionForm(forms.Form):
     """Form, that executes a manage.py command."""
 
     command = forms.CharField()
+    arguments = forms.CharField(
+        label=_('Arguments'),
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         super(CommandExecutionForm, self).__init__(*args, **kwargs)
@@ -38,9 +42,12 @@ class CommandExecutionForm(forms.Form):
                         dest = opt.dest.upper()
                     else:
                         dest = ''
-                    opt_string = '{0} {1}, {2} {1}'.format(
-                        ','.join(opt._short_opts), dest,
-                        ','.join(opt._long_opts))
+                    opt_string = ','.join(opt._long_opts)
+                    if dest:
+                        opt_string += '={0}'.format(dest)
+                    if opt._short_opts:
+                        opt_string = '{0} {1}, '.format(
+                            ','.join(opt._short_opts), dest) + opt_string
                     options.append(Option(opt_string, opt.help))
 
                 Command = namedtuple('Command', ['command', 'docstring',
@@ -86,5 +93,9 @@ class CommandExecutionForm(forms.Form):
           command to finish.
         """
         command = self.cleaned_data.get('command')
+        arguments = self.cleaned_data.get('arguments')
         manage_py = os.path.join(settings.DJANGO_PROJECT_ROOT, 'manage.py')
-        subprocess.Popen(['/.{0}'.format(manage_py), command])
+        popen_args = ['/.{0}'.format(manage_py), command]
+        if arguments:
+            popen_args.append(arguments)
+        subprocess.Popen(popen_args)

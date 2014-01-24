@@ -16,7 +16,10 @@ class CommandExecutionFormTestCase(TestCase):
 
     def setUp(self):
         command = 'mycommand'
-        self.data = {'command': command}
+        self.data = {
+            'command': command,
+        }
+        self.arguments = '--help'
         manage_py = os.path.join(settings.DJANGO_PROJECT_ROOT, 'manage.py')
         self.called_with = ['/.{0}'.format(manage_py), command]
 
@@ -31,3 +34,14 @@ class CommandExecutionFormTestCase(TestCase):
 
         form.execute()
         popen_mock.assert_called_with(self.called_with)
+
+        with_args = self.data.copy()
+        with_args.update({'arguments': self.arguments})
+        called_with_arguments = self.called_with
+        called_with_arguments.append(self.arguments)
+        form = CommandExecutionForm(with_args)
+        self.assertTrue(form.is_valid(), msg=(
+            'The form should be valid. Errors: {0}'.format(form.errors)))
+
+        form.execute()
+        popen_mock.assert_called_with(called_with_arguments)

@@ -27,6 +27,10 @@
             <form action="." method="post">
                 {% csrf_token %}
                 <input type="hidden" id="id_command" name="command" value="{{ command.command }}" />
+                <label class="control-label" for="{{ form.arguments.id_for_label }}">
+                    <span {% if field.field.required %}class="requiredLabel"{% endif %}>./manage.py {{ command.command }}</span>
+                    <input type="text" id="id_arguments" name="arguments" value="" placeholder="{% trans "arguments [optional]" %}" />
+                </label>
                 <input type="submit" value="{% trans "Run command" %}" />
             </form>
         {% endfor %}
