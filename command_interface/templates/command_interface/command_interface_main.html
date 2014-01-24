@@ -16,7 +16,14 @@
         <h2>{{ app.app_name }}</h2>
         {% for command in app.commands %}
             <h3>{{ command.command }}</h3>
-            <p>{{ command.docstring }}</p>
+            <h4>{% trans "Docstring" %}</h4>
+            <p>{{ command.docstring|linebreaks }}</p>
+            <h4>{% trans "Options" %}</h4>
+            <ul>
+                {% for option in command.options %}
+                    <li>{{ option.opt_string }}<br /><em>{{ option.help }}</em></li>
+                {% endfor %}
+            </ul>
             <form action="." method="post">
                 {% csrf_token %}
                 <input type="hidden" id="id_command" name="command" value="{{ command.command }}" />

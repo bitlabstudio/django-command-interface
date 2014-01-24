@@ -25,16 +25,35 @@ class CommandExecutionForm(forms.Form):
             if self.command_allowed(command_name, app_name):
                 self.allowed_commands.append(command_name)
                 command_class = load_command_class(app_name, command_name)
-                Command = namedtuple('Command', ['command', 'docstring'])
+                # creating an optionparser
+                optparser = command_class.create_parser(
+                    './manage.py', command_name)
+                # get the docstring from the parser
+                docstring = optparser.usage.replace('%prog', './manage.py')
+                # get the options
+                options = []
+                Option = namedtuple('Option', ['opt_string', 'help'])
+                for opt in optparser.option_list:
+                    if opt.dest is not None:
+                        dest = opt.dest.upper()
+                    else:
+                        dest = ''
+                    opt_string = '{0} {1}, {2} {1}'.format(
+                        ','.join(opt._short_opts), dest,
+                        ','.join(opt._long_opts))
+                    options.append(Option(opt_string, opt.help))
+
+                Command = namedtuple('Command', ['command', 'docstring',
+                                                 'options'])
                 if command_class.__doc__ is not None:
-                    docstring = command_class.__doc__
-                else:
-                    docstring = getattr(command_class, 'help',
-                                        _('No docs available.'))
-                command = Command(command_name, docstring)
+                    # in case there's a docstring on the class, prepend it to
+                    # make sure all description is included.
+                    docstring = command_class.__doc__ + '\n\n' + docstring
+
+                command = Command(command_name, docstring, options)
+                App = namedtuple(app_name.replace('.', '_'),
+                                 ['app_name', 'commands'])
                 if not app_name in apps:
-                    App = namedtuple(app_name.replace('.', '_'),
-                                     ['app_name', 'commands'])
                     apps[app_name] = App(app_name, [command])
                 else:
                     apps[app_name].commands.append(command)
