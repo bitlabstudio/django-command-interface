@@ -94,7 +94,9 @@ class CommandExecutionForm(forms.Form):
         """
         command = self.cleaned_data.get('command')
         arguments = self.cleaned_data.get('arguments')
-        manage_py = os.path.join(settings.DJANGO_PROJECT_ROOT, 'manage.py')
+        project_root = getattr(settings, 'DJANGO_PROJECT_ROOT',
+                               settings.PROJECT_ROOT)
+        manage_py = os.path.join(project_root, 'manage.py')
         popen_args = ['/.{0}'.format(manage_py), command]
         if arguments:
             popen_args.append(arguments)
