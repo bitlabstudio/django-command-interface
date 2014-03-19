@@ -1,5 +1,8 @@
 === (ongoing) ===
 
+
+=== 0.3 ===
+
 - automatically detect and activate current virtualenv
 
 === 0.2 ===
