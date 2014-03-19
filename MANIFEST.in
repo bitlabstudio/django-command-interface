@@ -2,7 +2,7 @@ include AUTHORS
 include LICENSE
 include DESCRIPTION
 include CHANGELOG.txt
-include README.md
+include README.rst
 graft command_interface
 global-exclude *.orig *.pyc *.log *.swp
 prune command_interface/tests/coverage
