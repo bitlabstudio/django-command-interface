@@ -109,7 +109,11 @@ class CommandExecutionForm(forms.Form):
         project_root = getattr(settings, 'DJANGO_PROJECT_ROOT',
                                settings.PROJECT_ROOT)
         manage_py = os.path.join(project_root, 'manage.py')
-        popen_args = ['/.{0}'.format(manage_py), command]
+        venv = os.environ.get('VIRTUAL_ENV', None)
+        python = '/usr/bin/python'
+        if venv is not None:
+            python = os.path.join(venv, 'bin/python')
+        popen_args = [python, manage_py, command]
         if arguments:
             popen_args.append(arguments)
         if app_settings.LOGFILE_PATH is not None:

@@ -21,7 +21,9 @@ class CommandExecutionFormTestCase(TestCase):
         }
         self.arguments = '--help'
         manage_py = os.path.join(settings.DJANGO_PROJECT_ROOT, 'manage.py')
-        self.called_with = ['/.{0}'.format(manage_py), command]
+        venv = os.environ.get('VIRTUAL_ENV', None)
+        python = os.path.join(venv, 'bin/python')
+        self.called_with = [python, manage_py, command]
 
     @patch.object(subprocess, 'Popen')
     def test_form(self, popen_mock):

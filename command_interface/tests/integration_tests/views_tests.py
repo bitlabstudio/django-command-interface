@@ -47,7 +47,9 @@ class CommandInterfaceViewTestCase(ViewTestMixin, TestCase):
         self.data = {'command': command}
         self.post_req = RequestFactory().post(self.get_url(), data=self.data)
         manage_py = os.path.join(settings.DJANGO_PROJECT_ROOT, 'manage.py')
-        self.called_with = ['/.{0}'.format(manage_py), command]
+        venv = os.environ.get('VIRTUAL_ENV', None)
+        python = os.path.join(venv, 'bin/python')
+        self.called_with = [python, manage_py, command]
 
         setattr(self.post_req, 'session', 'session')
         messages = FallbackStorage(self.post_req)
