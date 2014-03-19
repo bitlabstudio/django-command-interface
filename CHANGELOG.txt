@@ -1,5 +1,8 @@
 === (ongoing) ===
 
+
+=== 0.2 ===
+
 - added log files
 
 === 0.1 ===
