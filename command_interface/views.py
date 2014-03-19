@@ -4,7 +4,10 @@ from django.contrib.auth.views import redirect_to_login
 from django.core.urlresolvers import reverse
 from django.views.generic import FormView
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.messages import info
 
+from .exceptions import CommandError
 from .forms import CommandExecutionForm
 
 
@@ -25,7 +28,14 @@ class CommandInterfaceMainView(FormView):
             request, *args, **kwargs)
 
     def form_valid(self, form):
-        form.execute()
+        try:
+            form.execute()
+        except CommandError as ex:
+            form._errors = {'__all__': [ex.message]}
+            return self.form_invalid(form)
+        info(self.request, _('The command is running. Refresh the page from'
+                             ' time to time to see the output once the command'
+                             ' is finished.'))
         return super(CommandInterfaceMainView, self).form_valid(form)
 
     def get_success_url(self):

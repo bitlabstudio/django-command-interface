@@ -4,6 +4,7 @@ import subprocess
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import TestCase
 from django.test.client import RequestFactory
 
@@ -36,6 +37,7 @@ class CommandInterfaceViewTestCase(ViewTestMixin, TestCase):
         return 'command_interface_main'
 
     def setUp(self):
+
         self.regular_user = UserFactory()
         self.admin = UserFactory(is_superuser=True)
         self.req = RequestFactory().get(self.get_url())
@@ -46,6 +48,10 @@ class CommandInterfaceViewTestCase(ViewTestMixin, TestCase):
         self.post_req = RequestFactory().post(self.get_url(), data=self.data)
         manage_py = os.path.join(settings.DJANGO_PROJECT_ROOT, 'manage.py')
         self.called_with = ['/.{0}'.format(manage_py), command]
+
+        setattr(self.post_req, 'session', 'session')
+        messages = FallbackStorage(self.post_req)
+        setattr(self.post_req, '_messages', messages)
 
     @patch.object(subprocess, 'Popen')
     def test_view(self, popen_mock):

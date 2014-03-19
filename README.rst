@@ -39,6 +39,10 @@ Add the ``command_interface`` URLs to your ``urls.py``
         url(r'^command-interface/', include('command_interface.urls')),
     )
 
+This app uses the Django messages framework, so you need to add
+``django.contrib.messages.middleware.MessageMiddleware`` to your
+``MIDDLEWARE_CLASSES`` setting.
+
 
 Usage
 -----
@@ -56,6 +60,9 @@ Passing arguments to the commands is still WIP.
 Settings
 --------
 
+COMMAND_INTERFACE_DISPLAYED_APPS
+++++++++++++++++++++++++++++++++
+
 You can limit the displayed apps by setting
 ``COMMAND_INTERFACE_DISPLAYED_APPS``. The syntax is the same as it is in the
 ``INSTALLED_APPS`` setting. It defaults to showing absolutely all apps.
@@ -65,6 +72,8 @@ You can limit the displayed apps by setting
     # would list all commands of the awesome_app
     COMMAND_INTERFACE_DISPLAYED_APPS = ['awesome_app']
 
+COMMAND_INTERFACE_DISPLAYED_COMMANDS
+++++++++++++++++++++++++++++++++++++
 
 Further you can also provide a list of commands, that should explicitly be
 displayed. Defaults to all as well.
@@ -78,6 +87,21 @@ displayed. Defaults to all as well.
 The settings don't exclude each other. So displaying any full app and just one
 or two specific commands from somewhere else is no problem at all.
 
+COMMAND_INTERFACE_LOGFILE_PATH
+++++++++++++++++++++++++++++++
+
+For logging, you can specify a logfile path, where logfiles for each command
+can be created. The logfiles will always be prefixed with
+``command_interface_log-``.
+
+..code-block:: python
+
+    COMMAND_INTERFACE_LOGFILE_PATH = '/home/myname/tmp/logs/'
+
+This value defaults to ``None``, which means, that no logs are created.
+
+The log of the last run is then displayed on the command interface main view
+under each respective command.
 
 Contribute
 ----------

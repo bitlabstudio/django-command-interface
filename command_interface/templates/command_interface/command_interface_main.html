@@ -3,6 +3,13 @@
 {% block title %}Command interface{% endblock %}
 
 {% block main %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <h1>Command interface</h1>
     <p>{% trans "Clicking on &quot;Run command&quot; will execute the desired command in the background." %}</p>
     {% if form.errors %}
@@ -24,6 +31,10 @@
                     <li>{{ option.opt_string }}<br /><em>{{ option.help }}</em></li>
                 {% endfor %}
             </ul>
+            {% if command.log %}
+                <h4>Log of last run:</h4>
+                <p>{{ command.log|linebreaks }}</p>
+            {% endif %}
             <form action="." method="post">
                 {% csrf_token %}
                 <input type="hidden" id="id_command" name="command" value="{{ command.command }}" />

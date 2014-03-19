@@ -9,6 +9,7 @@ from django.core.management import get_commands, load_command_class
 from django.utils.translation import ugettext_lazy as _
 
 from . import settings as app_settings
+from .exceptions import CommandError
 
 
 class CommandExecutionForm(forms.Form):
@@ -51,13 +52,24 @@ class CommandExecutionForm(forms.Form):
                     options.append(Option(opt_string, opt.help))
 
                 Command = namedtuple('Command', ['command', 'docstring',
-                                                 'options'])
+                                                 'options', 'log'])
                 if command_class.__doc__ is not None:
                     # in case there's a docstring on the class, prepend it to
                     # make sure all description is included.
                     docstring = command_class.__doc__ + '\n\n' + docstring
 
-                command = Command(command_name, docstring, options)
+                log = None
+                if app_settings.LOGFILE_PATH is not None:
+                    file_name = os.path.join(
+                        app_settings.LOGFILE_PATH,
+                        'command_interface_log-{0}.log'.format(command_name))
+                    try:
+                        with open(file_name, 'r') as f:
+                            log = f.read()
+                    except IOError:
+                        pass
+
+                command = Command(command_name, docstring, options, log)
                 App = namedtuple(app_name.replace('.', '_'),
                                  ['app_name', 'commands'])
                 if not app_name in apps:
@@ -100,4 +112,14 @@ class CommandExecutionForm(forms.Form):
         popen_args = ['/.{0}'.format(manage_py), command]
         if arguments:
             popen_args.append(arguments)
-        subprocess.Popen(popen_args)
+        if app_settings.LOGFILE_PATH is not None:
+            file_name = os.path.join(
+                app_settings.LOGFILE_PATH,
+                'command_interface_log-{0}.log'.format(command))
+            try:
+                with open(file_name, 'w') as f:
+                    subprocess.Popen(popen_args, stdout=f, stderr=f)
+            except IOError:
+                raise CommandError('Could not open file for writing log.')
+        else:
+            subprocess.Popen(popen_args)
