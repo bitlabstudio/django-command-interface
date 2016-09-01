@@ -43,6 +43,10 @@ This app uses the Django messages framework, so you need to add
 ``django.contrib.messages.middleware.MessageMiddleware`` to your
 ``MIDDLEWARE_CLASSES`` setting.
 
+You HAVE to have `DJANGO_PROJECT_ROOT` in your settings pointing towards the
+directory of your `manage.py` file.
+
+
 
 Usage
 -----

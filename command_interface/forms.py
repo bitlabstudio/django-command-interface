@@ -34,11 +34,13 @@ class CommandExecutionForm(forms.Form):
                 optparser = command_class.create_parser(
                     './manage.py', command_name)
                 # get the docstring from the parser
-                docstring = optparser.usage.replace('%prog', './manage.py')
+                docstring = ''
+                if optparser.usage is not None:
+                    docstring = optparser.usage.replace('%prog', './manage.py')
                 # get the options
                 options = []
                 Option = namedtuple('Option', ['opt_string', 'help'])
-                for opt in optparser.option_list:
+                for opt in getattr(optparser, 'option_list', []):
                     if opt.dest is not None:
                         dest = opt.dest.upper()
                     else:
@@ -106,8 +108,7 @@ class CommandExecutionForm(forms.Form):
         """
         command = self.cleaned_data.get('command')
         arguments = self.cleaned_data.get('arguments')
-        project_root = getattr(settings, 'DJANGO_PROJECT_ROOT',
-                               settings.PROJECT_ROOT)
+        project_root = settings.DJANGO_PROJECT_ROOT
         manage_py = os.path.join(project_root, 'manage.py')
         venv = os.environ.get('VIRTUAL_ENV', None)
         python = '/usr/bin/python'
